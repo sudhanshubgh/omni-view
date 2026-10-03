@@ -288,15 +288,16 @@ app.get('/api/health', (req, res) => {
 });
 
 // Single Page Application Fallback Route for non-API requests
-app.get('*', (req, res) => {
-  if (!req.path.startsWith('/api')) {
+app.use((req, res, next) => {
+  if (req.method === 'GET' && !req.path.startsWith('/api')) {
     const indexPath = path.join(__dirname, 'dist', 'index.html');
-    res.sendFile(indexPath, (err) => {
+    return res.sendFile(indexPath, (err) => {
       if (err) {
         res.status(200).send('OmniView Multi-Tab Studio Backend Active. Run "npm run build" to enable full UI serving.');
       }
     });
   }
+  next();
 });
 
 app.listen(PORT, () => {
